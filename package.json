@@ -14,6 +14,7 @@
     "db:init": "node init-db-with-logs.js",
     "db:activate": "node activate-neon-db.js",
     "db:import": "node import-scraped-data.js",
+    "db:test": "node test-neon-connection.js",
     "clean": "rm -rf .next && rm -rf logs/*.log"
   },
   "dependencies": {
