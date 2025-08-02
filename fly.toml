@@ -1,0 +1,38 @@
+# fly.toml app configuration file generated for beasiswa-scheduler on 2025-08-02T17:54:00Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+
+app = "beasiswa-scheduler"
+primary_region = "sin"
+
+[build]
+
+[env]
+  NODE_ENV = "production"
+  SCHEDULER_PORT = "3001"
+  LOG_LEVEL = "info"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  timeout = "5s"
+  path = "/health"
+
+[machine]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256 
