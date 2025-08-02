@@ -21,6 +21,22 @@ async function makeRequest(endpoint: string, options: RequestInit = {}) {
     return await response.json()
   } catch (error) {
     logger.error(`Scheduler service request failed for ${endpoint}:`, error instanceof Error ? error : new Error(String(error)))
+    
+    // Return fallback data instead of throwing error
+    if (endpoint === '/status') {
+      return {
+        isRunning: false,
+        isEnabled: false,
+        lastUpdate: null,
+        nextUpdate: null,
+        isUpdating: false
+      }
+    }
+    
+    if (endpoint === '/logs') {
+      return { logs: [] }
+    }
+    
     throw error
   }
 }

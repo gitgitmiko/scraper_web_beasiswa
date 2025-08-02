@@ -86,12 +86,22 @@ export function MonitoringProvider({ children }: { children: React.ReactNode }) 
       
       const response = await fetch('/api/scheduler?action=status')
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        // Don't throw error, just use fallback data
+        console.warn(`Scheduler service unavailable: ${response.status}`)
+        dispatch({
+          type: 'SET_STATUS',
+          payload: {
+            isUpdating: false,
+            lastUpdate: null,
+            nextUpdate: null
+          }
+        })
+        return
       }
       
       const data = await response.json()
       
-      const wasUpdating = state.isUpdating
+            const wasUpdating = state.isUpdating
       const isNowUpdating = data.isUpdating
       
       dispatch({
@@ -100,6 +110,8 @@ export function MonitoringProvider({ children }: { children: React.ReactNode }) 
           isUpdating: isNowUpdating,
           lastUpdate: data.lastUpdate,
           nextUpdate: data.nextUpdate
+        }
+      })
         }
       })
       
@@ -233,8 +245,11 @@ export function MonitoringProvider({ children }: { children: React.ReactNode }) 
       })
       
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `HTTP ${response.status}`)
+        // Don't throw error, just show warning
+        console.warn(`Manual update service unavailable: ${response.status}`)
+        dispatch({ type: 'SET_ERROR', payload: 'Scheduler service tidak tersedia. Silakan coba lagi nanti.' })
+        dispatch({ type: 'SET_UPDATING', payload: false })
+        return
       }
       
       const data = await response.json()

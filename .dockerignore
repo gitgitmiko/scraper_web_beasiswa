@@ -1,75 +1,11 @@
-# Dependencies
 node_modules
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Next.js
-.next
-out
-
-# Production
-build
-dist
-
-# Environment files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Logs
-logs
-*.log
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage
-
-# IDE
-.vscode
-.idea
-*.swp
-*.swo
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Git
+npm-debug.log
 .git
 .gitignore
-
-# Documentation
-*.md
-!README.md
-
-# Data files (will be mounted as volume)
-data/*.json
-data/*.xlsx
-data/*.csv
-
-# Python
-__pycache__
-*.pyc
-*.pyo
-*.pyd
-.Python
-venv
-env
-ENV
-
-# Temporary files
-*.tmp
-*.temp 
+README.md
+.env
+.vercel
+.next
+out
+logs
+*.log 
