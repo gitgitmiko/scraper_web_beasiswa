@@ -112,8 +112,6 @@ export function MonitoringProvider({ children }: { children: React.ReactNode }) 
           nextUpdate: data.nextUpdate
         }
       })
-        }
-      })
       
       // Start polling logs when scraping starts (only if not already polling)
       if (!wasUpdating && isNowUpdating && !isPollingLogs) {
