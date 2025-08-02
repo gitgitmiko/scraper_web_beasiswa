@@ -11,6 +11,7 @@
     "scraper": "python main_scraper.py",
     "scheduler": "node scheduler-server-working.js",
     "scheduler:dev": "node scheduler-server-working.js",
+    "scheduler:railway": "node scheduler-server-working.js",
     "db:init": "node init-db-with-logs.js",
     "db:activate": "node activate-neon-db.js",
     "db:import": "node import-scraped-data.js",
