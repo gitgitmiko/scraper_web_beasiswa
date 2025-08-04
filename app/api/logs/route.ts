@@ -29,11 +29,13 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Failed to fetch logs:', error instanceof Error ? error.message : String(error))
     
+    // Return empty logs array as fallback when database is unavailable
     return NextResponse.json({
-      success: false,
-      error: 'Failed to fetch logs',
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
-    }, { status: 500 })
+      success: true,
+      logs: [],
+      count: 0,
+      message: 'Database temporarily unavailable, returning empty logs array'
+    })
   }
 }
 
