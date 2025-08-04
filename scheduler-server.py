@@ -333,15 +333,38 @@ def get_status():
 
 @app.route('/logs', methods=['GET'])
 def get_logs():
-    """Get logs"""
-    log_messages = []
-    for log in scheduler_state['logs']:
-        if isinstance(log, dict) and 'message' in log:
-            log_messages.append(log['message'])
-        else:
-            log_messages.append(str(log))
-    
-    return jsonify({'logs': log_messages})
+    """Get logs from database"""
+    try:
+        # Try to get logs from database first
+        response = requests.get(f"{VERCEL_URL}/api/logs?limit=50", timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            if 'logs' in data and data['logs']:
+                logger.info(f"✅ Retrieved {len(data['logs'])} logs from database")
+                return jsonify({'logs': data['logs']})
+        
+        # Fallback to memory logs
+        logger.warning("⚠️ Database logs not available, using memory logs")
+        log_messages = []
+        for log in scheduler_state['logs']:
+            if isinstance(log, dict) and 'message' in log:
+                log_messages.append(log['message'])
+            else:
+                log_messages.append(str(log))
+        
+        return jsonify({'logs': log_messages})
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch logs from database: {e}")
+        # Fallback to memory logs
+        log_messages = []
+        for log in scheduler_state['logs']:
+            if isinstance(log, dict) and 'message' in log:
+                log_messages.append(log['message'])
+            else:
+                log_messages.append(str(log))
+        
+        return jsonify({'logs': log_messages})
 
 @app.route('/start', methods=['POST'])
 def start_scheduler():
@@ -426,12 +449,27 @@ def reset_scheduler():
         scheduler_state['isEnabled'] = False
         scheduler_state['lastUpdate'] = None
         scheduler_state['nextUpdate'] = None
+        scheduler_state['logs'] = []  # Clear memory logs
         
         return jsonify({'message': 'Scheduler state reset successfully'})
     except Exception as e:
         logger.error(f"Failed to reset scheduler state: {e}")
         return jsonify({
             'error': 'Failed to reset scheduler state',
+            'message': str(e)
+        }), 500
+
+@app.route('/clear-logs', methods=['POST'])
+def clear_logs():
+    """Clear memory logs"""
+    try:
+        logger.info("[WARNING] Clearing memory logs")
+        scheduler_state['logs'] = []
+        return jsonify({'message': 'Memory logs cleared successfully'})
+    except Exception as e:
+        logger.error(f"Failed to clear memory logs: {e}")
+        return jsonify({
+            'error': 'Failed to clear memory logs',
             'message': str(e)
         }), 500
 
