@@ -22,7 +22,7 @@ from utils.helpers import WebScraperHelper
 def clear_database():
     """Clear semua data beasiswa dari database"""
     try:
-        api_url = os.getenv('NEXT_PUBLIC_APP_URL', 'http://localhost:3000')
+        api_url = os.getenv('VERCEL_URL', 'https://scrapingbeasiswaweb.vercel.app')
         
         print("[INFO] Clearing database...")
         
@@ -54,7 +54,7 @@ def clear_database():
 def save_to_database(beasiswa_list):
     """Menyimpan data beasiswa ke database melalui API dengan pendekatan delete-insert"""
     try:
-        api_url = os.getenv('NEXT_PUBLIC_APP_URL', 'http://localhost:3000')
+        api_url = os.getenv('VERCEL_URL', 'https://scrapingbeasiswaweb.vercel.app')
         
         print(f"[INFO] Memulai proses delete-insert untuk {len(beasiswa_list)} records")
         

@@ -12,7 +12,7 @@ import json
 import logging
 import asyncio
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
@@ -47,7 +47,7 @@ SCHEDULER_PORT = int(os.getenv('SCHEDULER_PORT', 3001))
 
 def get_next_update_time():
     """Get next update time (17:00 UTC = 00:00 WIB)"""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     next_update = now.replace(hour=17, minute=0, second=0, microsecond=0)
     
     if now.hour >= 17:
@@ -98,7 +98,7 @@ def execute_scraping():
         
         # Add initial log
         initial_log = {
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'message': '[START] Memulai proses scraping...',
             'level': 'INFO'
         }
@@ -181,14 +181,14 @@ def execute_scraping():
         
         # Handle completion
         scheduler_state['isUpdating'] = False
-        scheduler_state['lastUpdate'] = datetime.utcnow().isoformat()
+        scheduler_state['lastUpdate'] = datetime.now(timezone.utc).isoformat()
         
         if result.returncode == 0:
             logger.info("[SUCCESS] Scraping completed successfully")
             
             # Add success log
             success_log = {
-                'timestamp': datetime.utcnow().isoformat(),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
                 'message': '[SUCCESS] Scraping selesai dengan sukses',
                 'level': 'SUCCESS'
             }
@@ -226,7 +226,7 @@ def execute_scraping():
             
             # Add error log
             error_log = {
-                'timestamp': datetime.utcnow().isoformat(),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
                 'message': f'[ERROR] Scraping gagal dengan kode: {result.returncode}',
                 'level': 'ERROR'
             }
@@ -292,7 +292,7 @@ def health_check():
     """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
-        'timestamp': datetime.utcnow().isoformat(),
+        'timestamp': datetime.now(timezone.utc).isoformat(),
         'service': 'scheduler-service',
         'scheduler': {
             'isRunning': scheduler_state['isRunning'],
