@@ -120,18 +120,35 @@ def execute_scraping():
         try:
             import requests as req
             import bs4
-            import pandas
-            import lxml
             import selenium
             import fake_useragent
             import webdriver_manager
             import aiohttp
             import dotenv
-            import openpyxl
             import psycopg2
-            logger.info("✅ All Python dependencies imported successfully!")
+            
+            # Try to import optional dependencies
+            try:
+                import pandas
+                logger.info("✅ pandas imported successfully")
+            except ImportError:
+                logger.warning("⚠️ pandas not available, continuing without pandas")
+            
+            try:
+                import lxml
+                logger.info("✅ lxml imported successfully")
+            except ImportError:
+                logger.warning("⚠️ lxml not available, continuing without lxml")
+            
+            try:
+                import openpyxl
+                logger.info("✅ openpyxl imported successfully")
+            except ImportError:
+                logger.warning("⚠️ openpyxl not available, continuing without openpyxl")
+            
+            logger.info("✅ Core Python dependencies imported successfully!")
         except ImportError as e:
-            logger.error(f"❌ Python dependency import failed: {e}")
+            logger.error(f"❌ Core Python dependency import failed: {e}")
             raise
         
         # Execute main scraper
