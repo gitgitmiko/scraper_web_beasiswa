@@ -1,3 +1,4 @@
+// Simple logger client for API routes (no file system dependency)
 interface LogEntry {
   timestamp: string
   level: 'INFO' | 'ERROR' | 'WARN' | 'DEBUG'
@@ -6,7 +7,7 @@ interface LogEntry {
   error?: Error
 }
 
-class ClientLogger {
+class LoggerClient {
   private formatMessage(level: string, message: string, data?: any, error?: Error): string {
     let formatted = `[${level}] ${message}`
     
@@ -42,12 +43,10 @@ class ClientLogger {
     }
   }
 
-  // Client-safe methods that don't use fs
-  async getRecentLogs(): Promise<LogEntry[]> {
-    // In client-side, we can't read log files
-    // This would need to be handled via API calls
+  // Get recent logs (returns empty array since we don't store logs in API routes)
+  async getRecentLogs(level?: string, limit: number = 100): Promise<LogEntry[]> {
     return []
   }
 }
 
-export const clientLogger = new ClientLogger() 
+export const logger = new LoggerClient() 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { logger } from '@/utils/logger'
+import { logger } from '@/utils/logger-client'
 
 const SCHEDULER_SERVICE_URL = process.env.SCHEDULER_SERVICE_URL || 'https://beasiswa-scheduler.onrender.com'
 

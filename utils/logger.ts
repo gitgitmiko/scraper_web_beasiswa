@@ -13,15 +13,25 @@ class Logger {
   private logDir: string
   private maxLogSize: number = 10 * 1024 * 1024 // 10MB
   private maxLogFiles: number = 5
+  private isVercel: boolean
 
   constructor() {
+    this.isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production'
     this.logDir = path.join(process.cwd(), 'logs')
-    this.ensureLogDirectory()
+    
+    // Only create log directory if not in Vercel
+    if (!this.isVercel) {
+      this.ensureLogDirectory()
+    }
   }
 
   private ensureLogDirectory(): void {
-    if (!fs.existsSync(this.logDir)) {
-      fs.mkdirSync(this.logDir, { recursive: true })
+    try {
+      if (!fs.existsSync(this.logDir)) {
+        fs.mkdirSync(this.logDir, { recursive: true })
+      }
+    } catch (error) {
+      console.warn('Failed to create log directory, using console logging only:', error)
     }
   }
 
@@ -31,6 +41,11 @@ class Logger {
   }
 
   private async writeLog(entry: LogEntry): Promise<void> {
+    // Skip file logging in Vercel/production
+    if (this.isVercel) {
+      return
+    }
+
     try {
       const fileName = this.getLogFileName(entry.level)
       const logLine = JSON.stringify({
@@ -48,6 +63,10 @@ class Logger {
   }
 
   private async rotateLogs(fileName: string): Promise<void> {
+    if (this.isVercel) {
+      return
+    }
+
     try {
       const stats = await fs.promises.stat(fileName)
       if (stats.size > this.maxLogSize) {
@@ -174,6 +193,11 @@ class Logger {
 
   // Get recent logs
   async getRecentLogs(level?: string, limit: number = 100): Promise<LogEntry[]> {
+    // Return empty array in Vercel/production since we don't write to files
+    if (this.isVercel) {
+      return []
+    }
+
     try {
       const logs: LogEntry[] = []
       const files = await fs.promises.readdir(this.logDir)
