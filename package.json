@@ -16,6 +16,7 @@
     "scheduler:fly": "node scheduler-server-working.js",
     "scheduler:manage": "node manage-scheduler.js",
     "deploy:monitor": "node monitor-deployment.js",
+    "test:api": "node test-scheduler-api.js",
     "db:init": "node init-db-with-logs.js",
     "db:activate": "node activate-neon-db.js",
     "db:import": "node import-scraped-data.js",

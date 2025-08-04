@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/utils/logger'
 
-const SCHEDULER_SERVICE_URL = process.env.SCHEDULER_SERVICE_URL || 'http://localhost:3001'
+const SCHEDULER_SERVICE_URL = process.env.SCHEDULER_SERVICE_URL || 'https://beasiswa-scheduler.onrender.com'
 
 async function makeRequest(endpoint: string, options: RequestInit = {}) {
+  const url = `${SCHEDULER_SERVICE_URL}${endpoint}`
+  console.log(`🔗 Making request to: ${url}`)
+  console.log(`🔧 Environment: SCHEDULER_SERVICE_URL = ${process.env.SCHEDULER_SERVICE_URL || 'not set'}`)
+  
   try {
-    const response = await fetch(`${SCHEDULER_SERVICE_URL}${endpoint}`, {
+    const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -13,17 +17,25 @@ async function makeRequest(endpoint: string, options: RequestInit = {}) {
       ...options,
     })
 
+    console.log(`📊 Response status: ${response.status}`)
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
-      throw new Error(errorData.message || `HTTP ${response.status}`)
+      const errorMessage = errorData.message || `HTTP ${response.status}`
+      console.error(`❌ Request failed: ${errorMessage}`)
+      throw new Error(errorMessage)
     }
 
-    return await response.json()
+    const data = await response.json()
+    console.log(`✅ Request successful:`, data)
+    return data
   } catch (error) {
+    console.error(`❌ Scheduler service request failed for ${endpoint}:`, error instanceof Error ? error.message : String(error))
     logger.error(`Scheduler service request failed for ${endpoint}:`, error instanceof Error ? error : new Error(String(error)))
     
     // Return fallback data instead of throwing error
     if (endpoint === '/status') {
+      console.log(`🔄 Returning fallback status data`)
       return {
         isRunning: false,
         isEnabled: false,
@@ -34,6 +46,7 @@ async function makeRequest(endpoint: string, options: RequestInit = {}) {
     }
     
     if (endpoint === '/logs') {
+      console.log(`🔄 Returning fallback logs data`)
       return { logs: [] }
     }
     
