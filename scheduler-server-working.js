@@ -244,43 +244,63 @@ async function executeScraping() {
     // Run Python scraper with UTF-8 encoding
     // Test Python environment first
     console.log('🔍 Testing Python environment...')
-    const testResult = await new Promise((resolve) => {
-      const testProcess = spawn('python', ['test-python.py'], {
-        cwd: __dirname,
-        stdio: 'pipe',
-        env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
-      })
-      
-      let testOutput = ''
-      let testError = ''
-      
-      testProcess.stdout.on('data', (data) => {
-        testOutput += data.toString()
-      })
-      
-      testProcess.stderr.on('data', (data) => {
-        testError += data.toString()
-      })
-      
-      testProcess.on('close', (code) => {
-        if (code === 0) {
-          console.log('✅ Python environment test passed')
-          console.log('📋 Test output:', testOutput)
-          resolve(true)
-        } else {
-          console.error('❌ Python environment test failed')
-          console.error('📋 Test error:', testError)
-          resolve(false)
+    
+    // Try different Python commands for testing
+    const pythonCommands = ['python3', 'python', 'py']
+    let testResult = false
+    let testOutput = ''
+    let testError = ''
+    
+    for (const pythonCmd of pythonCommands) {
+      try {
+        console.log(`🔍 Testing Python environment with: ${pythonCmd}`)
+        const testResult = await new Promise((resolve) => {
+          const testProcess = spawn(pythonCmd, ['test-python.py'], {
+            cwd: __dirname,
+            stdio: 'pipe',
+            env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
+          })
+          
+          let output = ''
+          let error = ''
+          
+          testProcess.stdout.on('data', (data) => {
+            output += data.toString()
+          })
+          
+          testProcess.stderr.on('data', (data) => {
+            error += data.toString()
+          })
+          
+          testProcess.on('close', (code) => {
+            if (code === 0) {
+              console.log(`✅ Python environment test passed with: ${pythonCmd}`)
+              console.log('📋 Test output:', output)
+              testOutput = output
+              resolve(true)
+            } else {
+              console.log(`❌ Python environment test failed with: ${pythonCmd}`)
+              console.log('📋 Test error:', error)
+              testError = error
+              resolve(false)
+            }
+          })
+        })
+        
+        if (testResult) {
+          break
         }
-      })
-    })
+      } catch (error) {
+        console.log(`❌ Failed to test with ${pythonCmd}:`, error.message)
+        continue
+      }
+    }
     
     if (!testResult) {
       throw new Error('Python environment test failed. Please check dependencies.')
     }
     
     // Try different Python commands for different environments
-    const pythonCommands = ['python3', 'python', 'py']
     let pythonProcess = null
     let pythonError = null
     
