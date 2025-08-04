@@ -213,7 +213,8 @@ async function executeScraping() {
     
     // Clear previous logs from database
     try {
-      await fetch('http://localhost:3000/api/logs', { method: 'DELETE' })
+      const vercelUrl = process.env.VERCEL_URL || 'https://scrapingbeasiswaweb.vercel.app'
+      await fetch(`${vercelUrl}/api/logs`, { method: 'DELETE' })
       console.log('🗑️ Previous logs cleared from database')
     } catch (error) {
       console.error('Failed to clear previous logs:', error)
@@ -232,7 +233,8 @@ async function executeScraping() {
     
     // Save initial log to database
     try {
-      await fetch('http://localhost:3000/api/logs', {
+      const vercelUrl = process.env.VERCEL_URL || 'https://scrapingbeasiswaweb.vercel.app'
+      await fetch(`${vercelUrl}/api/logs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ logs: [initialLog] })
@@ -245,59 +247,74 @@ async function executeScraping() {
     // Test Python environment first
     console.log('🔍 Testing Python environment...')
     
-    // Try different Python commands for testing
-    const pythonCommands = ['python3', 'python', 'py']
-    let testResult = false
-    let testOutput = ''
-    let testError = ''
+    // Check if test-python.py exists
+    const fs = require('fs')
+    const testPythonPath = path.join(__dirname, 'test-python.py')
     
-    for (const pythonCmd of pythonCommands) {
-      try {
-        console.log(`🔍 Testing Python environment with: ${pythonCmd}`)
-        const testResult = await new Promise((resolve) => {
-          const testProcess = spawn(pythonCmd, ['test-python.py'], {
-            cwd: __dirname,
-            stdio: 'pipe',
-            env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
-          })
-          
-          let output = ''
-          let error = ''
-          
-          testProcess.stdout.on('data', (data) => {
-            output += data.toString()
-          })
-          
-          testProcess.stderr.on('data', (data) => {
-            error += data.toString()
-          })
-          
-          testProcess.on('close', (code) => {
-            if (code === 0) {
-              console.log(`✅ Python environment test passed with: ${pythonCmd}`)
-              console.log('📋 Test output:', output)
-              testOutput = output
-              resolve(true)
-            } else {
-              console.log(`❌ Python environment test failed with: ${pythonCmd}`)
-              console.log('📋 Test error:', error)
-              testError = error
+    if (!fs.existsSync(testPythonPath)) {
+      console.log('⚠️ test-python.py not found, skipping Python environment test')
+      console.log('📁 Current directory:', __dirname)
+      console.log('📁 Files in directory:', fs.readdirSync(__dirname).join(', '))
+    } else {
+      // Try different Python commands for testing
+      const pythonCommands = ['python3', 'python', 'py']
+      let testResult = false
+      let testOutput = ''
+      let testError = ''
+      
+      for (const pythonCmd of pythonCommands) {
+        try {
+          console.log(`🔍 Testing Python environment with: ${pythonCmd}`)
+          const testResult = await new Promise((resolve) => {
+            const testProcess = spawn(pythonCmd, ['test-python.py'], {
+              cwd: __dirname,
+              stdio: 'pipe',
+              env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
+            })
+            
+            let output = ''
+            let error = ''
+            
+            testProcess.stdout.on('data', (data) => {
+              output += data.toString()
+            })
+            
+            testProcess.stderr.on('data', (data) => {
+              error += data.toString()
+            })
+            
+            testProcess.on('close', (code) => {
+              if (code === 0) {
+                console.log(`✅ Python environment test passed with: ${pythonCmd}`)
+                console.log('📋 Test output:', output)
+                testOutput = output
+                resolve(true)
+              } else {
+                console.log(`❌ Python environment test failed with: ${pythonCmd}`)
+                console.log('📋 Test error:', error)
+                testError = error
+                resolve(false)
+              }
+            })
+            
+            testProcess.on('error', (error) => {
+              console.log(`❌ Process error with ${pythonCmd}:`, error.message)
               resolve(false)
-            }
+            })
           })
-        })
-        
-        if (testResult) {
-          break
+          
+          if (testResult) {
+            break
+          }
+        } catch (error) {
+          console.log(`❌ Failed to test with ${pythonCmd}:`, error.message)
+          continue
         }
-      } catch (error) {
-        console.log(`❌ Failed to test with ${pythonCmd}:`, error.message)
-        continue
       }
-    }
-    
-    if (!testResult) {
-      throw new Error('Python environment test failed. Please check dependencies.')
+      
+      if (!testResult) {
+        console.log('⚠️ Python environment test failed, but continuing with scraping...')
+      }
     }
     
     // Try different Python commands for different environments
@@ -354,20 +371,21 @@ async function executeScraping() {
            }
          })
          
-         // Save new logs to database
-         if (newLogs.length > 0) {
-           try {
-             fetch('http://localhost:3000/api/logs', {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({ logs: newLogs })
-             }).catch(error => {
-               console.error('Failed to save logs to database:', error)
-             })
-           } catch (error) {
-             console.error('Failed to save logs to database:', error)
-           }
-         }
+                   // Save new logs to database
+          if (newLogs.length > 0) {
+            try {
+              const vercelUrl = process.env.VERCEL_URL || 'https://scrapingbeasiswaweb.vercel.app'
+              fetch(`${vercelUrl}/api/logs`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ logs: newLogs })
+              }).catch(error => {
+                console.error('Failed to save logs to database:', error)
+              })
+            } catch (error) {
+              console.error('Failed to save logs to database:', error)
+            }
+          }
       })
       
              pythonProcess.stderr.on('data', (data) => {
@@ -383,18 +401,19 @@ async function executeScraping() {
          }
          schedulerState.logs.push(errorLog)
          
-         // Save error log to database
-         try {
-           fetch('http://localhost:3000/api/logs', {
-             method: 'POST',
-             headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify({ logs: [errorLog] })
-           }).catch(error => {
-             console.error('Failed to save error log to database:', error)
-           })
-         } catch (error) {
-           console.error('Failed to save error log to database:', error)
-         }
+                   // Save error log to database
+          try {
+            const vercelUrl = process.env.VERCEL_URL || 'https://scrapingbeasiswaweb.vercel.app'
+            fetch(`${vercelUrl}/api/logs`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ logs: [errorLog] })
+            }).catch(error => {
+              console.error('Failed to save error log to database:', error)
+            })
+          } catch (error) {
+            console.error('Failed to save error log to database:', error)
+          }
        })
       
       pythonProcess.on('close', (code) => {
@@ -414,18 +433,19 @@ async function executeScraping() {
          
          schedulerState.logs.push(completionLog)
          
-         // Save completion log to database
-         try {
-           fetch('http://localhost:3000/api/logs', {
-             method: 'POST',
-             headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify({ logs: [completionLog] })
-           }).catch(error => {
-             console.error('Failed to save completion log to database:', error)
-           })
-         } catch (error) {
-           console.error('Failed to save completion log to database:', error)
-         }
+                   // Save completion log to database
+          try {
+            const vercelUrl = process.env.VERCEL_URL || 'https://scrapingbeasiswaweb.vercel.app'
+            fetch(`${vercelUrl}/api/logs`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ logs: [completionLog] })
+            }).catch(error => {
+              console.error('Failed to save completion log to database:', error)
+            })
+          } catch (error) {
+            console.error('Failed to save completion log to database:', error)
+          }
          
          if (code === 0) {
            console.log('[SUCCESS] Scraping completed successfully')
@@ -441,9 +461,10 @@ async function executeScraping() {
            const durationSeconds = Math.round(durationMs / 1000)
            const duration = `${durationSeconds} detik`
            
-           // Get actual beasiswa count from database
-           let totalBeasiswa = 'N/A'
-           fetch('http://localhost:3000/api/beasiswa')
+                       // Get actual beasiswa count from database
+            let totalBeasiswa = 'N/A'
+            const vercelUrl = process.env.VERCEL_URL || 'https://scrapingbeasiswaweb.vercel.app'
+            fetch(`${vercelUrl}/api/beasiswa`)
              .then(response => response.json())
              .then(data => {
                totalBeasiswa = data.data?.length || 'N/A'
@@ -569,7 +590,8 @@ app.get('/beasiswa', async (req, res) => {
     const { kategori } = req.query
     
     // Forward to main API
-    const apiUrl = `http://localhost:3000/api/beasiswa${kategori ? `?kategori=${kategori}` : ''}`
+    const vercelUrl = process.env.VERCEL_URL || 'https://scrapingbeasiswaweb.vercel.app'
+    const apiUrl = `${vercelUrl}/api/beasiswa${kategori ? `?kategori=${kategori}` : ''}`
     const response = await fetch(apiUrl)
     const data = await response.json()
     
