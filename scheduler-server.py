@@ -126,13 +126,30 @@ def execute_scraping():
             import aiohttp
             import dotenv
             
-            # Try to import optional dependencies
+            # Test database connection
             try:
                 import psycopg2
                 logger.info("✅ psycopg2 imported successfully")
-            except ImportError:
-                logger.warning("⚠️ psycopg2 not available, continuing without database connection")
+                
+                # Try to connect to database
+                if DATABASE_URL:
+                    try:
+                        conn = psycopg2.connect(DATABASE_URL)
+                        cursor = conn.cursor()
+                        cursor.execute("SELECT version();")
+                        version = cursor.fetchone()
+                        logger.info(f"✅ Database connected successfully! PostgreSQL version: {version[0]}")
+                        cursor.close()
+                        conn.close()
+                    except Exception as e:
+                        logger.error(f"❌ Database connection failed: {e}")
+                else:
+                    logger.warning("⚠️ DATABASE_URL not set")
+                    
+            except ImportError as e:
+                logger.warning(f"⚠️ psycopg2 not available: {e}")
             
+            # Try to import optional dependencies
             try:
                 import pandas
                 logger.info("✅ pandas imported successfully")
