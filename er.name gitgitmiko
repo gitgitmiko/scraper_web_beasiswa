@@ -1,0 +1,90 @@
+[33mcommit 22d79d02fe359e4e8a9cf0b131c217d1a46a4163[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Mon Aug 4 10:15:05 2025 +0700
+
+    Add simple API route without logger dependency for Vercel compatibility
+
+[33mcommit adb742e7db1483f904c760466264f5b1460b23d8[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Mon Aug 4 10:12:08 2025 +0700
+
+    Fix logger compatibility with Vercel - disable file logging in production
+
+[33mcommit 13eaea6ce97545f35b3189478eeed271ae11f7e7[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Mon Aug 4 10:03:43 2025 +0700
+
+    Fix scheduler API with better error handling and logging
+
+[33mcommit d9f4e700fbf043619d5742c6710d9e9544ce385d[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Mon Aug 4 09:58:50 2025 +0700
+
+    Add deployment monitoring tools and guides
+
+[33mcommit 7d1adf30a1c3ac1ab23eb5b0830c3c64f99bbdc0[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Mon Aug 4 09:45:15 2025 +0700
+
+    Fix Python dependencies and add environment testing for Render deployment
+
+[33mcommit 1a0ae1ebbfe052fbb29273bf287f817a430cab27[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Sun Aug 3 02:15:16 2025 +0700
+
+    Fix syntax error in MonitoringContext
+
+[33mcommit 0f72ff227f170f5fbdb6925d911715a7e5a2a141[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Sun Aug 3 02:13:49 2025 +0700
+
+    Fix error handling for scheduler service unavailable
+
+[33mcommit e700fc326a00a2b9d48cf13c1763f2196f38918e[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Sun Aug 3 01:20:47 2025 +0700
+
+    Add Fly.io configuration and deployment guide as alternatives
+
+[33mcommit 56d550de46cabfab1aec296566815a4e1907714b[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Sun Aug 3 01:01:05 2025 +0700
+
+    Add Render.com configuration as free alternative to Railway
+
+[33mcommit 44273b7d36d3c8abd04e09a6cc2294c160c12bc7[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Sun Aug 3 00:56:22 2025 +0700
+
+    Add Railway configuration for scheduler service
+
+[33mcommit af2c8769c6af9f25e18bb16afd443e1c132bb830[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Sun Aug 3 00:49:10 2025 +0700
+
+    Fix vercel.json configuration
+
+[33mcommit d48971e2ea0684c3b613c6e0f5fc84c1fb602311[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Sun Aug 3 00:44:12 2025 +0700
+
+    Add Vercel deployment configuration
+
+[33mcommit 979a15c8007c044af0430f942062661cf2e3c1d3[m
+Merge: 01a5172 f5392b5
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Sun Aug 3 00:36:07 2025 +0700
+
+    Merge branch 'main' of https://github.com/gitgitmiko/scraper_web_beasiswa
+
+[33mcommit 01a5172fba02bdcc47efd30dc8f17ffa44c42df5[m
+Author: digiproc.dp.cr.icon4 <sigit.jatmiko@iconpln.co.id>
+Date:   Sun Aug 3 00:35:19 2025 +0700
+
+    Initial commit: Beasiswa Scraper Web Application
+
+[33mcommit f5392b53fa79afa56174afb17a6ac39c201a4552[m
+Author: Sigit Jatmiko <44293061+gitgitmiko@users.noreply.github.com>
+Date:   Sun Aug 3 00:34:19 2025 +0700
+
+    Initial commit

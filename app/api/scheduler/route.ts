@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { logger } from '@/utils/logger-simple'
 
 const SCHEDULER_SERVICE_URL = process.env.SCHEDULER_SERVICE_URL || 'https://beasiswa-scheduler.onrender.com'
 
@@ -31,7 +30,6 @@ async function makeRequest(endpoint: string, options: RequestInit = {}) {
     return data
   } catch (error) {
     console.error(`❌ Scheduler service request failed for ${endpoint}:`, error instanceof Error ? error.message : String(error))
-    logger.error(`Scheduler service request failed for ${endpoint}:`, error instanceof Error ? error : new Error(String(error)))
     
     // Return fallback data instead of throwing error
     if (endpoint === '/status') {
@@ -77,7 +75,7 @@ export async function GET(request: NextRequest) {
         }, { status: 400 })
     }
   } catch (error) {
-    logger.error('Failed to get scheduler information:', error instanceof Error ? error : new Error(String(error)))
+    console.error('Failed to get scheduler information:', error instanceof Error ? error.message : String(error))
     
     return NextResponse.json({
       success: false,
@@ -95,17 +93,17 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'start':
         const startResult = await makeRequest('/start', { method: 'POST' })
-        logger.info('Scheduler started successfully')
+        console.log('Scheduler started successfully')
         return NextResponse.json(startResult)
 
       case 'stop':
         const stopResult = await makeRequest('/stop', { method: 'POST' })
-        logger.info('Scheduler stopped successfully')
+        console.log('Scheduler stopped successfully')
         return NextResponse.json(stopResult)
 
       case 'execute':
         const executeResult = await makeRequest('/execute', { method: 'POST' })
-        logger.info('Manual execution completed successfully')
+        console.log('Manual execution completed successfully')
         return NextResponse.json(executeResult)
 
       case 'config':
@@ -113,7 +111,7 @@ export async function POST(request: NextRequest) {
           method: 'PUT',
           body: JSON.stringify(data)
         })
-        logger.info('Scheduler config updated successfully', data)
+        console.log('Scheduler config updated successfully', data)
         return NextResponse.json(configResult)
 
       default:
@@ -123,7 +121,7 @@ export async function POST(request: NextRequest) {
         }, { status: 400 })
     }
   } catch (error) {
-    logger.error('Failed to execute scheduler action:', error instanceof Error ? error : new Error(String(error)))
+    console.error('Failed to execute scheduler action:', error instanceof Error ? error.message : String(error))
     
     return NextResponse.json({
       success: false,

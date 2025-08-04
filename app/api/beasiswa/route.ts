@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { BeasiswaModel } from '@/services/database/models'
-import { logger } from '@/utils/logger'
 
 // Sample data sebagai fallback
 const sampleData = [
@@ -69,10 +68,10 @@ export async function GET(request: NextRequest) {
     let beasiswaData
     if (kategori) {
       beasiswaData = await BeasiswaModel.getByCategory(kategori)
-      logger.info(`Fetched beasiswa data for category: ${kategori}`, { count: beasiswaData.length })
+      console.log(`Fetched beasiswa data for category: ${kategori}`, { count: beasiswaData.length })
     } else {
       beasiswaData = await BeasiswaModel.getAll()
-      logger.info('Fetched all beasiswa data', { count: beasiswaData.length })
+      console.log('Fetched all beasiswa data', { count: beasiswaData.length })
     }
 
     // Transform data to match frontend expectations
@@ -97,7 +96,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     })
   } catch (error) {
-    logger.error('Failed to fetch beasiswa data:', error instanceof Error ? error : new Error(String(error)))
+    console.error('Failed to fetch beasiswa data:', error instanceof Error ? error.message : String(error))
     
     // Return sample data as fallback when database is unavailable
     let fallbackData = sampleData
@@ -142,13 +141,13 @@ export async function POST(request: NextRequest) {
 
     // Clear database first if requested
     if (clearFirst) {
-      logger.info('Clearing existing beasiswa data before insert')
+      console.log('Clearing existing beasiswa data before insert')
       await BeasiswaModel.deleteAll()
     }
 
     await BeasiswaModel.insertMany(transformedData)
     
-    logger.info('Successfully inserted beasiswa data', { count: transformedData.length, clearFirst })
+    console.log('Successfully inserted beasiswa data', { count: transformedData.length, clearFirst })
 
     return NextResponse.json({
       success: true,
@@ -156,7 +155,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString()
     })
   } catch (error) {
-    logger.error('Failed to insert beasiswa data:', error instanceof Error ? error : new Error(String(error)))
+    console.error('Failed to insert beasiswa data:', error instanceof Error ? error.message : String(error))
     
     return NextResponse.json({
       success: false,
@@ -174,7 +173,7 @@ export async function DELETE(request: NextRequest) {
     if (action === 'clear') {
       await BeasiswaModel.deleteAll()
       
-      logger.info('Successfully cleared all beasiswa data')
+      console.log('Successfully cleared all beasiswa data')
 
       return NextResponse.json({
         success: true,
@@ -185,7 +184,7 @@ export async function DELETE(request: NextRequest) {
       // Default DELETE behavior
       await BeasiswaModel.deleteAll()
       
-      logger.info('Successfully deleted all beasiswa data')
+      console.log('Successfully deleted all beasiswa data')
 
       return NextResponse.json({
         success: true,
@@ -194,7 +193,7 @@ export async function DELETE(request: NextRequest) {
       })
     }
   } catch (error) {
-    logger.error('Failed to delete beasiswa data:', error instanceof Error ? error : new Error(String(error)))
+    console.error('Failed to delete beasiswa data:', error instanceof Error ? error.message : String(error))
     
     return NextResponse.json({
       success: false,
