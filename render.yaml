@@ -1,22 +1,20 @@
 services:
-  - type: web
+  - type: worker
     name: beasiswa-scheduler
     env: python
     plan: free
-    buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: npm run scheduler
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scheduler-server.py
     envVars:
-      - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_mYUyq89fVhBN@ep-winter-sea-a1ps0yuo-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
       - key: NODE_ENV
         value: production
-      - key: NEXT_PUBLIC_APP_URL
-        value: https://scrapingbeasiswa-ifo7w0pvo-gitgitmikos-projects.vercel.app
-      - key: TELEGRAM_BOT_TOKEN
-        value: 8256294267:AAHJMAAh4nwcFC86b1ylugg6nIKeuyroJtw
-      - key: TELEGRAM_CHAT_ID
-        value: 939600706
       - key: SCHEDULER_PORT
         value: 3001
-      - key: LOG_LEVEL
-        value: info 
+      - key: DATABASE_URL
+        sync: false
+      - key: VERCEL_URL
+        value: https://scrapingbeasiswaweb.vercel.app
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false 
