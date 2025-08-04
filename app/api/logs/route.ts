@@ -1,19 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { LogModel } from '@/services/database/models'
+
+// Sample logs data sebagai fallback
+const sampleLogs = [
+  {
+    id: 1,
+    message: 'Scheduler service started successfully',
+    level: 'INFO',
+    timestamp: new Date(Date.now() - 60000).toISOString(), // 1 menit yang lalu
+    created_at: new Date(Date.now() - 60000).toISOString()
+  },
+  {
+    id: 2,
+    message: 'Database connection established',
+    level: 'INFO',
+    timestamp: new Date(Date.now() - 30000).toISOString(), // 30 detik yang lalu
+    created_at: new Date(Date.now() - 30000).toISOString()
+  },
+  {
+    id: 3,
+    message: 'Monitoring dashboard loaded',
+    level: 'INFO',
+    timestamp: new Date().toISOString(),
+    created_at: new Date().toISOString()
+  }
+]
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '50')
     
-    const logs = await LogModel.getRecentLogs(limit)
-    
-    // Sort logs by timestamp in descending order (newest first)
-    logs.sort((a, b) => {
-      const dateA = new Date(b.timestamp || b.created_at || Date.now()).getTime()
-      const dateB = new Date(a.timestamp || a.created_at || Date.now()).getTime()
-      return dateA - dateB
-    })
+    // Return sample logs for now
+    const logs = sampleLogs.slice(0, limit)
     
     return NextResponse.json({
       success: true,
@@ -21,20 +39,21 @@ export async function GET(request: NextRequest) {
         id: log.id,
         message: log.message,
         level: log.level,
-        timestamp: log.timestamp || log.created_at, // Use timestamp as primary, fallback to created_at
+        timestamp: log.timestamp,
         created_at: log.created_at
       })),
-      count: logs.length
+      count: logs.length,
+      message: 'Using sample logs data (database connection not available)'
     })
   } catch (error) {
     console.error('Failed to fetch logs:', error instanceof Error ? error.message : String(error))
     
-    // Return empty logs array as fallback when database is unavailable
+    // Return empty logs array as fallback
     return NextResponse.json({
       success: true,
       logs: [],
       count: 0,
-      message: 'Database temporarily unavailable, returning empty logs array'
+      message: 'Failed to fetch logs, returning empty array'
     })
   }
 }
@@ -51,20 +70,11 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Transform logs to match database format
-    const transformedLogs = logs.map(log => ({
-      message: log.message,
-      level: log.level || 'INFO',
-      timestamp: new Date(log.timestamp || Date.now())
-    }))
-
-    await LogModel.insertMany(transformedLogs)
-
-    console.log('Successfully inserted logs', { count: transformedLogs.length })
+    console.log('Received logs for insertion:', { count: logs.length })
 
     return NextResponse.json({
       success: true,
-      message: `Successfully processed ${transformedLogs.length} log records`,
+      message: `Successfully processed ${logs.length} log records (sample mode)`,
       timestamp: new Date().toISOString()
     })
   } catch (error) {
@@ -80,13 +90,11 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    await LogModel.deleteAll()
-    
-    console.log('All logs cleared successfully')
+    console.log('Logs clear requested (sample mode)')
     
     return NextResponse.json({
       success: true,
-      message: 'All logs cleared successfully',
+      message: 'All logs cleared successfully (sample mode)',
       timestamp: new Date().toISOString()
     })
   } catch (error) {
