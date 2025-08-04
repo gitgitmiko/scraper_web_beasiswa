@@ -125,9 +125,14 @@ def execute_scraping():
             import webdriver_manager
             import aiohttp
             import dotenv
-            import psycopg2
             
             # Try to import optional dependencies
+            try:
+                import psycopg2
+                logger.info("✅ psycopg2 imported successfully")
+            except ImportError:
+                logger.warning("⚠️ psycopg2 not available, continuing without database connection")
+            
             try:
                 import pandas
                 logger.info("✅ pandas imported successfully")
