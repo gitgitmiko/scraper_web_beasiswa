@@ -3,7 +3,7 @@ services:
     name: beasiswa-scheduler-python
     env: python
     plan: free
-    buildCommand: chmod +x build.sh && ./build.sh
+    buildCommand: pip install -r requirements-minimal.txt
     startCommand: python scheduler-server.py
     envVars:
       - key: NODE_ENV

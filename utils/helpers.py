@@ -3,10 +3,10 @@ import time
 import random
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
-import pandas as pd
 import json
 from datetime import datetime
 import os
+import csv
 
 class WebScraperHelper:
     def __init__(self):
@@ -56,19 +56,35 @@ class WebScraperHelper:
         print(f"Data disimpan ke {filepath}")
     
     def save_to_excel(self, data, filename):
-        """Simpan data ke file Excel"""
-        os.makedirs('data', exist_ok=True)
-        filepath = os.path.join('data', filename)
-        df = pd.DataFrame(data)
-        df.to_excel(filepath, index=False)
-        print(f"Data disimpan ke {filepath}")
+        """Simpan data ke file Excel (tanpa pandas)"""
+        try:
+            # Try to use pandas if available
+            import pandas as pd
+            os.makedirs('data', exist_ok=True)
+            filepath = os.path.join('data', filename)
+            df = pd.DataFrame(data)
+            df.to_excel(filepath, index=False)
+            print(f"Data disimpan ke {filepath}")
+        except ImportError:
+            print(f"⚠️ pandas tidak tersedia, skip save to Excel: {filename}")
     
     def save_to_csv(self, data, filename):
-        """Simpan data ke file CSV"""
+        """Simpan data ke file CSV (tanpa pandas)"""
         os.makedirs('data', exist_ok=True)
         filepath = os.path.join('data', filename)
-        df = pd.DataFrame(data)
-        df.to_csv(filepath, index=False, encoding='utf-8')
+        
+        if not data:
+            print(f"⚠️ Tidak ada data untuk disimpan ke CSV: {filename}")
+            return
+        
+        # Get fieldnames from first item
+        fieldnames = list(data[0].keys())
+        
+        with open(filepath, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(data)
+        
         print(f"Data disimpan ke {filepath}")
     
     def get_current_date(self):
