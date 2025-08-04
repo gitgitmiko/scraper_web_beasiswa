@@ -1,9 +1,9 @@
 services:
-  - type: worker
-    name: beasiswa-scheduler
+  - type: web
+    name: beasiswa-scheduler-python
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: chmod +x build.sh && ./build.sh
     startCommand: python scheduler-server.py
     envVars:
       - key: NODE_ENV
