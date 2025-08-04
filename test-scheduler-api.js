@@ -1,4 +1,4 @@
-const VERCEL_API_URL = 'https://scrapingbeasiswaweb.vercel.app/api/scheduler'
+const VERCEL_API_URL = 'https://scrapingbeasiswaweb.vercel.app/api/scheduler-simple'
 
 async function testSchedulerAPI() {
   console.log('🧪 Testing Scheduler API')
