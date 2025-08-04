@@ -247,6 +247,9 @@ async function executeScraping() {
     // Test Python environment first
     console.log('🔍 Testing Python environment...')
     
+    // Define Python commands for different environments
+    const pythonCommands = ['python3', 'python', 'py']
+    
     // Check if test-python.py exists
     const fs = require('fs')
     const testPythonPath = path.join(__dirname, 'test-python.py')
@@ -257,7 +260,6 @@ async function executeScraping() {
       console.log('📁 Files in directory:', fs.readdirSync(__dirname).join(', '))
     } else {
       // Try different Python commands for testing
-      const pythonCommands = ['python3', 'python', 'py']
       let testResult = false
       let testOutput = ''
       let testError = ''
