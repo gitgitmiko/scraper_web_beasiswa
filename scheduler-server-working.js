@@ -250,12 +250,12 @@ async function executeScraping() {
     // Define Python commands for different environments
     const pythonCommands = ['python3', 'python', 'py']
     
-    // Check if test-python.py exists
+    // Check if test-python-deps.py exists
     const fs = require('fs')
-    const testPythonPath = path.join(__dirname, 'test-python.py')
+    const testPythonPath = path.join(__dirname, 'test-python-deps.py')
     
     if (!fs.existsSync(testPythonPath)) {
-      console.log('⚠️ test-python.py not found, skipping Python environment test')
+      console.log('⚠️ test-python-deps.py not found, skipping Python environment test')
       console.log('📁 Current directory:', __dirname)
       console.log('📁 Files in directory:', fs.readdirSync(__dirname).join(', '))
     } else {
@@ -268,7 +268,7 @@ async function executeScraping() {
         try {
           console.log(`🔍 Testing Python environment with: ${pythonCmd}`)
           const testResult = await new Promise((resolve) => {
-            const testProcess = spawn(pythonCmd, ['test-python.py'], {
+            const testProcess = spawn(pythonCmd, ['test-python-deps.py'], {
               cwd: __dirname,
               stdio: 'pipe',
               env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
