@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useState, useRef } from 'react'
-import { clientLogger } from '@/utils/logger-client'
+import { logger as clientLogger } from '@/utils/logger-client'
 
 interface MonitoringState {
   isUpdating: boolean
